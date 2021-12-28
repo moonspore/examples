@@ -8,7 +8,7 @@
 - The School Group is also the authority for which students currently attend which schools in the organization.
 - All of the colleges in The School Group are provided with an account that allows them to log in to The School Group administrative website and make changes to the profiles of students that attend their college.
 
-### Entities Involved in this example scenario
+### Entities involved in this example scenario
 
 >**The School Group**<br/>
 >An organization consisting of a group of schools that all agree to operate under the same policies. The organization can add new schools at any time.
@@ -25,7 +25,7 @@
 >**Employee**<br/>
 >An employee of Popular College with the ability to log in to The School Group administrative website and make changes to the profiles of students that attend Popular College.
 
-## Desired real-world behavior
+### Desired real-world behavior
 1. Alice is contemplating applying to Popular College.
 
 2. While browsing the Popular College website on her mobile device she taps a link to download the "School Chat" app that was created by The School Group. This app will allow her to chat with students who currently attend Popular College (or any other school that is a member of The School Group).
@@ -54,7 +54,7 @@
 
 14. Alice and Bob may now type messages that are sent back and forth between them.
 
-## Privacy, security, and connectivity requirements
+### Privacy, security, and connectivity requirements
 
 - These messages must not be able to be read by anyone but Alice or Bob, including the administrators of "School Chat" app and servers, members of The School Group, or other students.
 
@@ -69,7 +69,7 @@
 - The School Chat app on Alice's device will verify the proof that Bob shares with her as having been issued by The School Group.
 - After the School Chat app on Alice's device verifies that Bob's credential is valid then a "Verified Student at Popular College" badge appears under Bob's name in the chat window on Alice's School Chat app.
 
-## Verification of Bob as a student of Popular College
+### Verification of Bob as a student of Popular College
 
 1. When Bob first enrolled in Popular College through their official website he received an email at the end of the process asking him to verify his identity in person with an employee of Popular College.
 
@@ -92,3 +92,11 @@
 10. After the connection was established Bob immediately received a credential from The School Group that verifies that he is a student at Popular College.
 
 11. That credential was stored in Bob’s School Chat app and can later be sent to Alice when her School Chat app requests proof that Bob is a student at Popular College.
+
+## Assumptions about the implementation of this behavior
+
+While trying to understand DID, SSI, Aries Framework JavaScript, Aries Mobile Agent React Native, and the many other related technologies associated with this technical domain I have found myself asking many questions, making many assumptions, and performing a lot of trial and error experiments using the various projects, tools, libraries, frameworks, and templates provided by the contributors to this ecosystem in an attempt to understand just exactly how all of this works.
+
+I will outline my current gaps in understanding by stating some of my assumptions alongside some of my questions in hopes that someone can connect the dots for me in a way that helps me to understand things more clearly.
+
+As a qualifier, I consider myself to be a "regular developer" as opposed to a domain expert. There are millions of developers like myself who simply work on whatever applications are presented to us in our professional lives by the companies we work for or the clients we are hired by (mobile apps, web applications, cloud-based services, etc). We learn the technologies necessary to implement the desired solution and we build projects using complex technologies, but we are not the creators or maintainers of those technologies. We learn to use complicated technologies and write custom solutions around them to make our applications and systems behave the way we want, but we are not academics or researchers. We are "regular developers" who simply work on whatever projects that are put in front of us.
