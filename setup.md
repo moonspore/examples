@@ -152,5 +152,39 @@ const runAgent = async () => {
   });
 };
 
+httpInboundTransport.app.get('/invitation', async (req, res) => {
+  if (typeof req.query.c_i === 'string') {
+    const invitation = await ConnectionInvitationMessage.fromUrl(req.url)
+    res.send(invitation.toJSON())
+  } else {
+    const { invitation } = await agent.connections.createConnection()
+
+    const httpEndpoint = config.endpoints.find((e) => e.startsWith('http'))
+
+    var inv = invitation.toUrl({ domain: httpEndpoint + '/invitation' })
+
+    res.send(inv)
+  }
+})
+
 runAgent();
 ```
+5. Build and run the mediator.ts file on Node.js with `tsc mediator.ts ; node mediator.js`
+6. Test that the agent is working
+- Visit `http://192.168.1.72:3001/invitation`
+- Receive invitation URL `http://192.168.1.72:3001/invitation?c_i=eyJAdHlwZSI6Imh0dHBzOi8vZGlkY29tbS5vcmcvY29ubmVjdGlvbnMvMS4wL2ludml0YXRpb24iLCJAaWQiOiIyOGMxZTBmNS01YzVhLTRkYjMtYjhkZC02Y2IwZDgxN2Y4MTIiLCJsYWJlbCI6Ik1pZ3JhdGUgRGF0YSBWYXVsdCIsInJlY2lwaWVudEtleXMiOlsiQmNhQ3E2dzdiZmtvZGI4aUxhR0tTQXMzaEZEOEpENHVVZlNDeXd1REdUcTEiXSwic2VydmljZUVuZHBvaW50Ijoid3M6Ly8xOTIuMTY4LjEuNzI6MzAwMSIsInJvdXRpbmdLZXlzIjpbXX0`
+- Visit the invitation URL to view the invitation contents
+```
+{
+  "@type": "https://didcomm.org/connections/1.0/invitation",
+  "@id": "28c1e0f5-5c5a-4db3-b8dd-6cb0d817f812",
+  "label": "Private Data Vault",
+  "recipientKeys": [
+    "BcaCq6w7bfkodb8iLaGKSAs3hFD8JD4uUfSCywuDGTq1"
+  ],
+  "serviceEndpoint": "ws://192.168.1.72:3001",
+  "routingKeys": []
+}
+```
+
+Node.js mediator agent is now running and able to create connection invitations.
