@@ -75,7 +75,7 @@ export default `{"reqSignature":{},"txn":{"data":{"data":{"alias":"Node1","blske
 ```
 4. Create `/server/afj/mediator.ts` based on [/samples/mediator.ts](https://github.com/hyperledger/aries-framework-javascript/blob/main/samples/mediator.ts) from the aries-framework-javascript repository
 ```typescript
-import { InitConfig } from "@aries-framework/core";
+import { InitConfig } from "@aries-framework/core";Node.js m
 
 import * as express from "express";
 import { Server } from "ws";
@@ -187,4 +187,8 @@ runAgent();
 }
 ```
 
-Node.js mediator agent is now running and able to create connection invitations.
+The mediator agent is now running on Node.js and able to create connection invitations.
+
+### Edge agent on React Native
+1. Copied the `/server/afj/configs` folder that contains the VON genesis and pool files to the React Native project at `/server/mywallet/configs`
+2. 
