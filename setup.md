@@ -590,4 +590,56 @@ The Node.js mediator is now successfully registered as an Endorser on the ledger
 
 Next the mediator must create and register a new schema and credential definition on the ledger.
 
-1. 
+1. Created a function in `/server/afj/mediator.ts` to register the schema
+```typescript
+const registerSchema = (agent: Agent) =>
+  agent.ledger.registerSchema({
+    name: `Person`,
+    version: '1.0.0',
+    attributes: ['Name', 'Phone'],
+  })
+```
+2. Created a function in `/server/afj/mediator.ts` to register the credential definition
+```typescript
+const registerCredentialDefinition = (agent: Agent, schema: Schema) =>
+  agent.ledger.registerCredentialDefinition({
+    schema,
+    tag: 'latest',
+    supportRevocation: true,
+  })
+```
+3. Created a method in `/server/afj/mediator.ts` to call the `registerSchema()` and `registerCredentialDefinition()` functions
+```typescript
+httpInboundTransport.app.get('/createschema', async (req, res) => {
+  const schema = await registerSchema(agent)
+  const credentialDefinition = await registerCredentialDefinition(agent, schema)  
+  res.send('schema and credential definition registered')
+})
+```
+4. Visited `http://192.168.1.72:3001/createschema` in a browser
+5. Visited the VON webserver UI located at `http://localhost:9000/` and clicked the "Domain" link under the "Ledger State" section of the UI
+6. The ledger shows two new entries
+
+The first new entry is for the schema and contains the following information under the "Transaction" header
+```
+Type: SCHEMA
+Schema name: Person
+Schema version: 1.0.0
+Schema attributes:
+• Name
+• Phone
+```
+
+The second new entry is for the credential definition and contains the following information under the "Transaction" header
+```
+Type: CRED_DEF
+Reference: 7
+Signature type: CL
+Tag: latest
+Attributes:
+• master_secret
+• name
+• phone
+```
+
+The second new entry has a "Transaction ID" value of `HJUyRbeMTesrgShkNqbAYP:3:CL:7:latest` under its "Message Wrapper" section.
