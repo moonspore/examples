@@ -460,4 +460,4 @@ Pressing "List Connections" on Bob's agent shows the following:
 Private Data Vault
 Private Wallet Alice
 ```
-The two React Native edge agents have connected succesfully using the invitation that was created by Alice's Agent and pasted into Bob's agent.
+The two React Native edge agents have connected succesfully using the invitation that was created by Alice's agent and pasted into Bob's agent.
