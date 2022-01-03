@@ -793,11 +793,49 @@ const showCredentials = async () => {
 Alice has successfully been issued a credential by the Node.js mediator for the credential definition with ID of `HJUyRbeMTesrgShkNqbAYP:3:CL` containing a value of "Alice" for the "Name" attribute.
 
 ### Make a request from one edge agent to the other edge agent asking for proof of a credential
-1. Added `ProofEventTypes` to the list of imports for the React Native edge agent
+1. Created a `requestProof()` method in the `/server/mywallet/App.js` file to request proof of a credential from a connection with "Name" as the only requested attribute
+```javascript
+const requestProof = async conn => {
+  var pr = await agent.proofs.requestProof(
+    conn,
+    {
+      requestedAttributes: {person_name: {name: 'Name'}},
+    },
+    {
+      autoAcceptProof: true,
+    },
+  );  
+};
 ```
+2. Added a "Request Proof" button to each connection displayed in the FlatList to call the `requestProof()` method with the ID of that connection 
+```javascript
+<FlatList
+    data={myConnections}
+    renderItem={({item}) => (
+    <View style={{flexDirection: 'row', marginBottom: 20}}>    
+        <Button
+          onPress={() => {
+            sendMessage(item.id,message);
+          }}
+          title="Send Message"
+        />
+        <Button
+          onPress={() => {
+            requestProof(item.id);
+          }}
+          title="Request Proof"
+        />
+        <Text>{item.name}</Text>
+    </View>
+    )}
+    keyExtractor={item => item.id}
+/>
+```
+3. Added `ProofEventTypes` to the list of imports for the React Native edge agent
+```javascript
 import { ProofEventTypes } from "@aries-framework/core";
 ```
-2. Added a listener to `/server/mywallet/App.js` to accept incoming proof requests received by the edge agent and present proof to the edge agent that requested the proof
+4. Added a listener to `/server/mywallet/App.js` to accept incoming proof requests received by the edge agent and present proof to the edge agent that requested the proof
 ```javascript
 agent.events.on<ProofStateChangedEvent>(
   ProofEventTypes.ProofStateChanged,
@@ -821,7 +859,11 @@ agent.events.on<ProofStateChangedEvent>(
 );
 
 ```
-This is where the expected functionality fails. Everything up until this point has worked flawlessly. It is only when trying to create the proof presentation that an error occurs.
+5. Pressed the "Request Proof" button on Bob's agent next to the "Private Wallet Alice" connection
+6. A proof request is created and sent to Alice's agent
+7. An error occurs on Alice's agent
+
+This is where the expected functionality fails. Everything up until this point has worked flawlessly. It is only when trying to create the proof presentation from Alice's agent that an error occurs.
 
 The error in question reads as follows:
 ```
