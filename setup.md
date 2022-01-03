@@ -191,4 +191,84 @@ The mediator agent is now running on Node.js and able to create connection invit
 
 ### Edge agent on React Native
 1. Copied the `/server/afj/configs` folder that contains the VON genesis and pool files to the React Native project at `/server/mywallet/configs`
-2. 
+2. Modified the automatically created `/server/mywallet/App.js` file and added the ability to initialize an agent
+```javascript
+ import {
+  Agent,
+  HttpOutboundTransport,
+  MediatorPickupStrategy,
+  WsOutboundTransport,
+  AutoAcceptProof,
+  AutoAcceptCredential,
+  ConsoleLogger,
+} from "@aries-framework/core";
+import { agentDependencies } from "@aries-framework/react-native";
+
+import React from "react";
+import type { Node } from "react";
+import { SafeAreaView, StatusBar, Text, View, Button } from "react-native";
+
+import indyConfig from "./configs/von/pool-config";
+
+const App: () => Node = () => {
+  const [agent, setAgent] = React.useState(null);
+  const [myConnections, setMyConnections] = React.useState([]);
+
+  const initializeAgent = async (walletLabel) => {
+    var invite = await fetch("http://192.168.1.72:3001/request");
+
+    var data = await invite.text();
+
+    const newAgent = new Agent(
+      {
+        label: "My Wallet " + walletLabel,
+        mediatorConnectionsInvite: data,
+        mediatorPickupStrategy: MediatorPickupStrategy.Implicit,
+        walletConfig: { id: "mywalletid", key: "mywalletkey" },
+        autoAcceptConnections: true,
+        autoAcceptProofs: AutoAcceptProof.ContentApproved,
+        autoAcceptCredentials: AutoAcceptCredential.ContentApproved,
+        logger: new ConsoleLogger(LogLevel.trace),
+        indyLedgers: [indyConfig],
+        genesisTransactions: indyConfig.genesisTransactions,
+      },
+      agentDependencies
+    );
+
+    const wsTransport = new WsOutboundTransport();
+    const httpTransport = new HttpOutboundTransport();
+
+    newAgent.registerOutboundTransport(wsTransport);
+    newAgent.registerOutboundTransport(httpTransport);
+
+    await newAgent.initialize();
+
+    setAgent(newAgent);
+  };
+
+  return (
+    <SafeAreaView>
+      <StatusBar barStyle={"light-content"} />
+      <View>
+        <Text>My Wallet</Text>
+      </View>
+      <View>
+        <Button
+          onPress={() => {
+            initializeAgent("Alice");
+          }}
+          title="Initialize Agent with name Alice"
+        />
+        <Button
+          onPress={() => {
+            initializeAgent("Bob");
+          }}
+          title="Initialize Agent with name Bob"
+        />
+      </View>
+    </SafeAreaView>
+  );
+};
+
+export default App;
+```
