@@ -520,13 +520,38 @@ newAgent.events.on(BasicMessageEventTypes.BasicMessageStateChanged, (e) => {
 ```javascript
 agent.events.on(BasicMessageEventTypes.BasicMessageStateChanged, (e) => {
   if (e.payload.basicMessageRecord.role === "receiver") {
+    console.log(e.payload.message.content)
     agent.basicMessages.sendMessage(e.payload.basicMessageRecord.connectionId, 'message received')
   }
 })
 ```
 
 ### Testing basic messaging between edge agents and the mediator
-1.
+Alice
+1. Typed a message saying "Hello from Alice" into the message text input field on Alice's agent
+2. Pressed "Send" Message next to "Private Data Vault" in the list of connections on Alice's agent
+3. The console for the mediator running on Node.js displays "Hello from Alice"
+4. A return message saying "message received" is sent from the mediator to Alice's agent
+5. Alice's agent displays an alert that says "message received"
+
+Bob
+1. Typed a message saying "Hello from Bob" into the message text input field on Bob's agent
+2. Pressed "Send" Message next to "Private Data Vault" in the list of connections on Bob's agent
+3. The console for the mediator running on Node.js displays "Hello from Bob"
+4. A return message saying "message received" is sent from the mediator to Bob's agent
+5. Bob's agent displays an alert that says "message received"
+
+Both Alice and Bob can successfully exchange basic messages *with the mediator*.
 
 ### Testing basic messaging between the two edge agents
-1. 
+Alice to Bob
+1. Typed a message saying "Hello Bob this is Alice" into the message text input field on Alice's agent
+2. Pressed "Send Message" next to "Private Wallet Bob" in the list of connections on Alice's agent
+3. Bob's agent displays an alert that says "Hello Bob this is Alice"
+
+Bob to Alice
+1. Typed a message saying "Hello Alice this is Bob" into the message text input field on Bob's agent
+2. Pressed "Send Message" next to "Private Wallet Alice" in the list of connections on Bob's agent
+3. Alice's agent displays an alert that says "Hello Alice this is Bob"
+
+Both Alice's agent and Bob's agent can successfully exchange basic messages *with each other*re able to.
