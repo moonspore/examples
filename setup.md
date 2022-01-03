@@ -587,3 +587,7 @@ Verkey: 9tKZRphq5Jwoo79CVnTEv75fXQ3BQzBqFquWGARM9bUx
 ```
 
 The Node.js mediator is now successfully registered as an Endorser on the ledger with permission to write new entries to the ledger.
+
+Next the mediator must create and register a new schema and credential definition on the ledger.
+
+1. 
