@@ -555,3 +555,8 @@ Bob to Alice
 3. Alice's agent displays an alert that says "Hello Alice this is Bob"
 
 Both Alice's agent and Bob's agent can successfully exchange basic messages *with each other*.
+
+### Issuing credentials from the Node.js mediator to the React Native edge agents
+The Indy ledger running on the local VON network is permissioned to ony allow Trust Anchors or Trustees to write to it.
+
+The DID and Verkey of the Node.js mediator agent must be registered / authenticated as an endorser via the VON webserver UI before the mediator will be allowed to write to the ledger.
