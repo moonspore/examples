@@ -554,4 +554,4 @@ Bob to Alice
 2. Pressed "Send Message" next to "Private Wallet Alice" in the list of connections on Bob's agent
 3. Alice's agent displays an alert that says "Hello Alice this is Bob"
 
-Both Alice's agent and Bob's agent can successfully exchange basic messages *with each other*re able to.
+Both Alice's agent and Bob's agent can successfully exchange basic messages *with each other*.
