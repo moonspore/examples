@@ -189,7 +189,7 @@ runAgent();
 
 The mediator agent is now running on Node.js and able to create connection invitations.
 
-### Edge agent on React Native
+### Configuration of edge agent on React Native
 1. Copied the `/server/afj/configs` folder that contains the VON genesis and pool files to the React Native project at `/server/mywallet/configs`
 2. Modified the automatically created `/server/mywallet/App.js` file and added the ability to initialize an agent with a customized wallet label
 ```javascript
@@ -274,7 +274,7 @@ export default App;
 ```
 3. Launched an Android emulator using `sudo ./emulator -avd Pixel_3a_API_30_x86` to create a *Pixel 3a* device
 4. Installed the React Native app on the emulator using `npx react-native run-android`
-5. Launched a second emulator using `sudo ./emulator -avd Pixel_3a_API_30_x86 -read-only` to create another *Pixel 3a* device (since the same command was used to launch the emulator, the React Native app is already installed on the second emulator when it launches)
+5. Launched a second emulator using `sudo ./emulator -avd Pixel_3a_API_30_x86 -read-only` to create a second *Pixel 3a* device (since the same command was used to launch the emulator, the React Native app is already installed on the second emulator when it launches)
 6. Opened the React Native app on both emulators
 7. Both devices display the "My Wallet" application interface which consists of two buttons "Initialize Agent with name Alice" and "Initialize Agent with name Bob"
 8. Tapped "Initialize Agent with name Alice" on the first device and tapped "Initialize Agent with name Bob" on the second device
@@ -282,3 +282,182 @@ export default App;
 The React Native "My Wallet" app is now running on both emulated devices.
 
 The first device initialized the agent using the wallet label *My Wallet Alice* and the second device initialized the agent using the wallet label *My Wallet Bob*
+
+The *My Wallet Alice* agent will be now be referred to as *Alice's agent* and the *My Wallet Bob* agent will now be referred to as *Bob's agent*.
+
+### Confirming both "My Wallet" React Native app connections to the Node.js mediator
+1. Added a method to the `/server/afj/mediator.ts` file to list all connections to the mediator
+```typescript
+httpInboundTransport.app.get("/connections", async (req, res) => {
+  var connections = await agent.connections.getAll();
+
+  var conns = [];
+
+  connections.forEach((c, i) => {
+    conns.push({
+      label: c.theirLabel,
+      id: c.id,
+    });
+  });
+
+  var list = "";
+
+  conns.forEach((conn, i) => {
+    list = list + conn.label + `<br />`;
+  });
+
+  res.send(list);
+});
+```
+2. Visit http://192.168.1.72:3001/connections in a browswer to display a list of connections to the mediator
+3. The browswer shows the following output
+```
+Migrate Wallet Alice
+Migrate Wallet Bob
+```
+The "My Wallet" React Native app running on both emulators is successfully connected to the Node.js mediator
+
+### Establish a mediated connection between the two "My Wallet" React Native apps
+1. Added a method to the `/server/mywallet/App.js` file to create connection invitations from the React Native app
+```javascript
+const createInvite = async () => {
+  const {invitation, connectionRecord} =
+    await agent.connections.createConnection({
+      autoAcceptConnection: true,
+      alias: 'inviter',
+    });
+
+  var inv = invitation.toUrl({
+    domain: 'http://192.168.1.72:3001' + '/invitation',
+  });
+
+  setAgentInvite(inv);
+};
+```
+2. Added a variable to store a created invitation
+```javascript
+const [agentInvite, setAgentInvite] = React.useState('');
+```
+3. Added a button to call the `createInvite()` method
+```javascript
+<View>
+  <Button
+    onPress={() => {
+      createInvite();
+    }}
+    title="Create Invite"
+  />
+</View>
+```
+4. Added a text input field that will serve two purposes:
+- Inviter
+  -  Display the value of the invitation URL stored in the `agentInvite` variable after pressing the "Create Invite" button
+- Invitee
+  -  Allow pasting of an invitation URL to store it in the `agentInvite` variable
+```javascript
+<View>
+  <TextInput
+    value={agentInvite}
+    onChangeText={text => {
+      setAgentInvite(text);
+    }}
+  />
+</View>
+```
+5. Added a method to accept the connection invitation stored in the `agentInvite` variable
+```javascript
+const acceptInvite = async () => {
+  agent.connections.receiveInvitationFromUrl(agentInvite, {
+    autoAcceptConnection: true,
+  });
+};
+```
+6. Added a button to call the `acceptInvite()` method
+```javascript
+<View>
+  <Button
+    onPress={() => {
+      acceptInvite();
+    }}
+    title="Accept Invite"
+  />
+```
+7. Pressed the "Create Invite" button Alice's agent
+8. The value of the newly created invitation URL is stored in the `agentInvite` variable on Alice's agent and appears in the text input field on Alice's agent
+```
+http://192.168.1.72:3001/invitation?c_i=eyJAdHlwZSI6Imh0dHBzOi8vZGlkY29tbS5vcmcvY29ubmVjdGlvbnMvMS4wL2ludml0YXRpb24iLCJAaWQiOiI1ODNhYzM0Zi0wN2NjLTQ2MWQtOTZhNC0zNGRmYTM2NDcxODYiLCJsYWJlbCI6Ik1pZ3JhdGUgV2FsbGV0IEFsaWNlIiwicmVjaXBpZW50S2V5cyI6WyI1VUFMOEpUaVZ2N3A4alBVUUFXVVFOR3lMTlc0SHVyMWtYREI1eTF4Vnl6aCJdLCJzZXJ2aWNlRW5kcG9pbnQiOiJodHRwOi8vMTkyLjE2OC4xLjcyOjMwMDEiLCJyb3V0aW5nS2V5cyI6WyJDY3dNWXdzMUtKUG5VQjlEMXpMWm80N2ZwQ2ExeW1pUHhXM21ETjVLVGJtWSJdfQ
+```
+9. Visited the newly created invitation URL in the browser to display its contents
+```
+{
+  "@type": "https://didcomm.org/connections/1.0/invitation",
+  "@id": "583ac34f-07cc-461d-96a4-34dfa3647186",
+  "label": "Migrate Wallet Alice",
+  "recipientKeys": [
+    "5UAL8JTiVv7p8jPUQAWUQNGyLNW4Hur1kXDB5y1xVyzh"
+  ],
+  "serviceEndpoint": "http://192.168.1.72:3001",
+  "routingKeys": [
+    "CcwMYws1KJPnUB9D1zLZo47fpCa1ymiPxW3mDN5KTbmY"
+  ]
+}
+```
+10. Pasted the newly created invitation URL into the text input field on Bob's agent
+11. Pressed the "Accept Invite" button on Bob's agent
+
+### Confirming the connection between the two React Native edge agents
+1. Added a method to the React Native app to display a list of connections
+```javascript
+const listConnections = async () => {
+  var connections = await agent.connections.getAll();
+
+  var connectionList = [];
+
+  connections.forEach((c, i) => {
+    connectionList.push({
+      name: c.theirLabel,
+      id: c.id,
+    });
+  });
+
+  setMyConnections(connectionList);
+};
+```
+2. Added a variable to store the list of connections
+```javascript
+const [myConnections, setMyConnections] = React.useState([]);
+```
+3. Added a button to call the `getConnections()` method
+```javascript
+<View>
+  <Button
+    onPress={() => {
+      listConnections();
+    }}
+    title="List Connections"
+  />
+</View>
+```
+4. Added a FlatList to display the list of connections
+```javascript
+<FlatList
+    data={myConnections}
+    renderItem={({item}) => (
+    <View style={{flexDirection: 'row', marginBottom: 20}}>       
+        <Text>{item.name}</Text>
+    </View>
+    )}
+    keyExtractor={item => item.id}
+/>
+```
+Pressing "List Connections" on Alice's agent shows the following:
+```
+Private Data Vault
+Private Wallet Bob
+```
+Pressing "List Connections" on Bob's agent shows the following:
+```
+Private Data Vault
+Private Wallet Alice
+```
+The two React Native edge agents have connected succesfully using the invitation that was created by Alice's Agent and pasted into Bob's agent.
