@@ -312,8 +312,8 @@ httpInboundTransport.app.get("/connections", async (req, res) => {
 2. Visit http://192.168.1.72:3001/connections in a browswer to display a list of connections to the mediator
 3. The browswer shows the following output
 ```
-Migrate Wallet Alice
-Migrate Wallet Bob
+Private Wallet Alice
+Private Wallet Bob
 ```
 The "My Wallet" React Native app running on both emulators is successfully connected to the Node.js mediator
 
@@ -392,7 +392,7 @@ http://192.168.1.72:3001/invitation?c_i=eyJAdHlwZSI6Imh0dHBzOi8vZGlkY29tbS5vcmcv
 {
   "@type": "https://didcomm.org/connections/1.0/invitation",
   "@id": "583ac34f-07cc-461d-96a4-34dfa3647186",
-  "label": "Migrate Wallet Alice",
+  "label": "Private Wallet Alice",
   "recipientKeys": [
     "5UAL8JTiVv7p8jPUQAWUQNGyLNW4Hur1kXDB5y1xVyzh"
   ],
