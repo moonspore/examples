@@ -525,5 +525,8 @@ agent.events.on(BasicMessageEventTypes.BasicMessageStateChanged, (e) => {
 })
 ```
 
-### Testing basic messaging
+### Testing basic messaging between edge agents and the mediator
+1.
+
+### Testing basic messaging between the two edge agents
 1. 
