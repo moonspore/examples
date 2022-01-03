@@ -174,7 +174,7 @@ runAgent();
 - Visit `http://192.168.1.72:3001/invitation`
 - Receive invitation URL `http://192.168.1.72:3001/invitation?c_i=eyJAdHlwZSI6Imh0dHBzOi8vZGlkY29tbS5vcmcvY29ubmVjdGlvbnMvMS4wL2ludml0YXRpb24iLCJAaWQiOiIyOGMxZTBmNS01YzVhLTRkYjMtYjhkZC02Y2IwZDgxN2Y4MTIiLCJsYWJlbCI6Ik1pZ3JhdGUgRGF0YSBWYXVsdCIsInJlY2lwaWVudEtleXMiOlsiQmNhQ3E2dzdiZmtvZGI4aUxhR0tTQXMzaEZEOEpENHVVZlNDeXd1REdUcTEiXSwic2VydmljZUVuZHBvaW50Ijoid3M6Ly8xOTIuMTY4LjEuNzI6MzAwMSIsInJvdXRpbmdLZXlzIjpbXX0`
 - Visit the invitation URL to view the invitation contents
-```
+```json
 {
   "@type": "https://didcomm.org/connections/1.0/invitation",
   "@id": "28c1e0f5-5c5a-4db3-b8dd-6cb0d817f812",
@@ -560,3 +560,30 @@ Both Alice's agent and Bob's agent can successfully exchange basic messages *wit
 The Indy ledger running on the local VON network is permissioned to ony allow Trust Anchors or Trustees to write to it.
 
 The DID and Verkey of the Node.js mediator agent must be registered / authenticated as an endorser via the VON webserver UI before the mediator will be allowed to write to the ledger.
+
+1. Created a method in `/server/afj/mediator.ts' to retrieve the mediator's public DID and Verkey
+```typescript
+httpInboundTransport.app.get('/publicdid', async (req, res) => {  
+  res.send(agent.publicDid)
+})
+```
+2. Visited `http://localhost:3001/publicdid` in a browser to display the public DID and Verkey for the mediator
+```json
+{"did":"HJUyRbeMTesrgShkNqbAYP","verkey":"9tKZRphq5Jwoo79CVnTEv75fXQ3BQzBqFquWGARM9bUx"}
+```
+3. Visited the VON webserver UI located at `http://localhost:9000/` and performed the following steps in the "Authenticate a New DID" section of the UI:
+  - Changed "Register from seed" to "Register from DID"
+  - Populated the DID field with the value `HJUyRbeMTesrgShkNqbAYP`
+  - Populated the Verkey field with the value `9tKZRphq5Jwoo79CVnTEv75fXQ3BQzBqFquWGARM9bUx`
+  - Clicked the "Register DID" button
+
+4. Clicked the "Domain" link under the "Ledger State" section of the UI
+5. The ledger shows a new entry with the following data displayed under the "Transaction" header of the new entry
+```
+Type: NYM
+Nym: HJUyRbeMTesrgShkNqbAYP
+Role: ENDORSER
+Verkey: 9tKZRphq5Jwoo79CVnTEv75fXQ3BQzBqFquWGARM9bUx
+```
+
+The Node.js mediator is now successfully registered as an Endorser on the ledger with permission to write new entries to the ledger.
