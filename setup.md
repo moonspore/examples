@@ -406,7 +406,7 @@ http://192.168.1.72:3001/invitation?c_i=eyJAdHlwZSI6Imh0dHBzOi8vZGlkY29tbS5vcmcv
 11. Pressed the "Accept Invite" button on Bob's agent
 
 ### Confirming the connection between the two React Native edge agents
-1. Added a method to the React Native app to display a list of connections
+1. Added a method to the `/server/mywallet/App.js` file to display a list of connections for the React Native app
 ```javascript
 const listConnections = async () => {
   var connections = await agent.connections.getAll();
@@ -461,3 +461,69 @@ Private Data Vault
 Private Wallet Alice
 ```
 The two React Native edge agents have connected succesfully using the invitation that was created by Alice's agent and pasted into Bob's agent.
+
+### Basic messaging configuration
+1. Added a method to the `/server/mywallet/App.js` file to send a basic message to a specified connection ID
+```javascript
+const sendMessage = (conn,content) => {
+  agent.basicMessages.sendMessage(conn, content);
+};
+```
+2. Added a text input field to type new messages into
+```javascript
+<View>
+  <TextInput
+    value={message}
+    onChangeText={text => {
+      setMessage(text);
+    }}
+    placeholder="type message here"
+  />
+</View>
+```
+3. Added a variable to store the typed message
+```javascript
+const [message, setMessage] = React.useState('');
+```
+4. Added a "Send Message" button to each connection displayed in the FlatList to call the `sendMessage()` method with the ID of that connection along with the content of the typed message
+```javascript
+<FlatList
+    data={myConnections}
+    renderItem={({item}) => (
+    <View style={{flexDirection: 'row', marginBottom: 20}}>    
+        <Button
+          onPress={() => {
+            sendMessage(item.id,message);
+          }}
+          title="Send Message"
+        />
+        <Text>{item.name}</Text>
+    </View>
+    )}
+    keyExtractor={item => item.id}
+/>
+```
+5. Added `BasicMessageEventsTypes` to the list of imports
+```javascript
+import { BasicMessageEventTypes } from "@aries-framework/core";
+```
+6. Added a listener for when a basic message is received by the edge agent to display an alert with the content of the basic message
+```javascript
+newAgent.events.on(BasicMessageEventTypes.BasicMessageStateChanged, (e) => {
+  if (e.payload.basicMessageRecord.role === "receiver") {
+    alert(e.payload.message.content);
+  }
+});
+
+```
+7. Added a listener to the `/server/afj/mediator.ts` file to log basic messages received by the mediator to the console and respond to the sender with a basic message that says "message received"
+```javascript
+agent.events.on(BasicMessageEventTypes.BasicMessageStateChanged, (e) => {
+  if (e.payload.basicMessageRecord.role === "receiver") {
+    agent.basicMessages.sendMessage(e.payload.basicMessageRecord.connectionId, 'message received')
+  }
+})
+```
+
+### Testing basic messaging
+1. 
