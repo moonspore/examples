@@ -75,7 +75,7 @@ export default `{"reqSignature":{},"txn":{"data":{"data":{"alias":"Node1","blske
 ```
 4. Create `/server/afj/mediator.ts` based on [/samples/mediator.ts](https://github.com/hyperledger/aries-framework-javascript/blob/main/samples/mediator.ts) from the aries-framework-javascript repository
 ```typescript
-import { InitConfig } from "@aries-framework/core";Node.js m
+import { InitConfig } from "@aries-framework/core";
 
 import * as express from "express";
 import { Server } from "ws";
