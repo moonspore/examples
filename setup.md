@@ -509,7 +509,7 @@ import { BasicMessageEventTypes } from "@aries-framework/core";
 ```
 6. Added a listener for when a basic message is received by the edge agent to display an alert with the content of the basic message
 ```javascript
-newAgent.events.on(BasicMessageEventTypes.BasicMessageStateChanged, (e) => {
+agent.events.on(BasicMessageEventTypes.BasicMessageStateChanged, (e) => {
   if (e.payload.basicMessageRecord.role === "receiver") {
     alert(e.payload.message.content);
   }
@@ -556,7 +556,7 @@ Bob to Alice
 
 Both Alice's agent and Bob's agent can successfully exchange basic messages *with each other*.
 
-### Issuing credentials from the Node.js mediator to the React Native edge agents
+### Registering a new schema and credential definition on the ledger
 The Indy ledger running on the local VON network is permissioned to ony allow Trust Anchors or Trustees to write to it.
 
 The DID and Verkey of the Node.js mediator agent must be registered / authenticated as an endorser via the VON webserver UI before the mediator will be allowed to write to the ledger.
@@ -630,6 +630,8 @@ Schema attributes:
 • Phone
 ```
 
+The first new entry on the ledger has a "Transaction ID" value of `HJUyRbeMTesrgShkNqbAYP:2:Neighbor:1.0.0` under its "Message Wrapper" section. This value is the schema ID.
+
 The second new entry is for the credential definition and contains the following information under the "Transaction" header
 ```
 Type: CRED_DEF
@@ -642,4 +644,187 @@ Attributes:
 • phone
 ```
 
-The second new entry has a "Transaction ID" value of `HJUyRbeMTesrgShkNqbAYP:3:CL:7:latest` under its "Message Wrapper" section.
+The second new entry on the ledger has a "Transaction ID" value of `HJUyRbeMTesrgShkNqbAYP:3:CL:7:latest` under its "Message Wrapper" section. This value is the credential definition ID.
+
+The schema and credential definition are now successfully registered on the ledger.
+
+### Issuing credentials from the Node.js mediator to the React Native edge agents
+1. Created a method in `/server/afj/mediator.ts` to offer a credential based on the newly created credential definition with ID `HJUyRbeMTesrgShkNqbAYP:3:CL:7:latest` to a specific connection by supplying the following query parameters:
+ - connection: the ID of the connection to offer the credential to
+ - name: the value to assign to the "Name" attribute of the credential being offered
+```typescript
+httpInboundTransport.app.get("/offer", async (req, res) => {
+  var conn = req.query.connection;
+
+  var definitionID = "HJUyRbeMTesrgShkNqbAYP:3:CL:7:latest";
+
+  const credentialPreview = CredentialPreview.fromRecord({
+    Name: req.query.name,
+  });
+
+  await agent.credentials.offerCredential(conn, {
+    credentialDefinitionId: definitionID,
+    preview: credentialPreview,
+  });
+
+  res.send("credential offered");
+});
+
+```
+2. Added a method to the `/server/afj/mediator.ts` file to list all connections to the mediator as links to the `/offer` method with the connection's ID as the `connection` query parameter and a shortened version of the agent's label as the `name` query parameter
+```typescript
+httpInboundTransport.app.get("/offerlist", async (req, res) => {
+  var connections = await agent.connections.getAll();
+
+  var conns = [];
+
+  connections.forEach((c, i) => {
+    conns.push({
+      label: c.theirLabel,
+      id: c.id,
+    });
+  });
+
+  var list = "";
+
+  conns.forEach((conn, i) => {    
+    // use only the last part of the connection label as the "name" query parameter to be used as the "Name" attribute when issuing the credential
+    // "Private Wallet Alice" becomes "Alice" and "Private Wallet Bob" becomes "Bob"
+    var shortName = conn.label.split(' ')[2]
+    
+    // create a link to the /offer method with the connection ID as the "connection" query parameter and the shortened label as the "name" query parameter
+    list = list + `<a href="http://192.168.1.72:3001/offer?connection=` + conn.id + `&name=`+shortName+`">` + conn.label + `</a><br />`
+  });
+
+  res.send(list);
+});
+```
+3. Added `CredentialEventTypes` to the list of imports for the React Native edge agent
+```
+import { CredentialEventTypes } from "@aries-framework/core";
+```
+4. Added a listener to the edge agent that will listen for credential offers and accept them
+```
+agent.events.on(
+  CredentialEventTypes.CredentialStateChanged,
+  async ({payload}: CredentialStateChangedEvent) => {
+    if (payload.credentialRecord.state === CredentialState.OfferReceived) {
+      agent.credentials.acceptOffer(payload.credentialRecord.id);      
+    }
+  },
+);
+```
+5. Visited `http://192.168.1.72:3001/offerlist` to display a list of the mediator's connections as links to the `/offer` method resulting in the following output
+```
+<a href="http://192.168.1.72:3001/offer?connection=4b0f8b90-058b-4fd1-9b2e-26faa635bae5&name=Alice">Issue credential to Private Wallet Alice</a>
+<a href="http://192.168.1.72:3001/offer?connection=003f038c-576a-4ab6-bc9e-c3bd458384cc&name=Bob">Issue credential to Private Wallet Bob</a>
+```
+6. Clicked the link titled "Issue credential to Alice" to call the `/offer` method and issue a credential to Alice's agent with the "Name" attribute having a value of "Alice"
+7. Imported the Buffer library to decode the credential data which is provided in base64
+```
+import { Buffer } from 'buffer';
+```
+8. Created a method in `/server/mywallet/App.js` of the React Native app to decode any credentials the agent has received and log them to the console
+```javascript
+const showCredentials = async () => {
+  var credentials = await agent.credentials.getAll();
+
+  credentials.forEach((c, i) => {
+    if (c.state === 'done') {
+      var s = Buffer.from(
+        c.credentialMessage.credentialAttachments[0].data.base64,
+        'base64',
+      ).toString();
+      var sp = JSON.parse(s);
+      console.log(JSON.stringify(sp.values, null, 2));
+    }
+  });
+
+  return false;
+};
+```
+9. Created a button to call the `showCredentials()` method
+```javascript
+<View>
+  <Button
+    onPress={() => {
+      showCredentials();
+    }}
+    title="Show Credentials"
+  />
+</View>
+```
+10. Pressed the "Show Credentials" button on Alice's agent to log the credential received from the mediator to the console resulting in the following output in the console
+```json
+{
+  "schema_id": "HJUyRbeMTesrgShkNqbAYP:2:Person:1.0.0",
+  "cred_def_id": "HJUyRbeMTesrgShkNqbAYP:3:CL:7:latest",
+  "rev_reg_id": null,
+  "values": {
+    "Name": {
+      "raw": "Alice",
+      "encoded": "49134673262984350012203662936972218187780495801618915546443112853445148770448"
+    }
+  },
+  "signature": {
+    "p_credential": {
+      "m_2": "76092918671082413225206030085402336436948677394289535359059308875779241743382",
+      "a": "10423598576783233265270818089957266406991114630011914353583266141408488991894647945752982508933783796949169509843591780929535780819619194812735176485369151515807341173514262541798505127910940009944844767491139121412767402761133032911229326871289208700364209836853327919536420064125060049912518767595324239371736669060222086085331830954339396180867530055976844001861270821405288100540643093466496589705102304146934651831215596407338087822828411757276870056477606949302739956154301273379177379917153098374681628245718608288944517279488445313736909681346493962261130541245467992909835209086231008115370704281325330918825",
+      "e": "259344723055062059907025491480697571938277889515152306249728583105665800713306759149981690559193987143012367913206299323899696942213235956742930076853569989116441333963922006014813",
+      "v": "5220185797045082548314232643500235417996463517433225198460165875693179296576285879219216410847081406095193848339501569049134435400099326154323123894037272866740279248935600732380800492678910869510961744421687244711203202543613005729237703834091168978421413308884686493953804126946690636665971013617689934765226516320115208625820176544759291198337391653211132083794675253250671299749030178402766654457984549542202573287963303145088719151432916828992472098783742560673341581521665459561407198660441420947248958804708836806564801249440485158423606207128312775842437255538446147107035260419629257122542841896696586001251492168978175447029368613220771569786144373979537979848545803425589258086097921284870876652639117534024014438879541125215226022969347562299852323455218351949630537433167024751657672908556710616811109998499"
+    },
+    "r_credential": null
+  },
+  "signature_correctness_proof": {
+    "se": "13832383249391622270697153024037102999325064059393813703137547000669371745548580217683165507738473366773591663799660304141541083591009553188032105212220578272890863069531526807379620154661445412755700440071447592871454415264801496507310982907084800277324805256716882791567315366689149543165026886112829706479891873023365411826129422764118954398088622890964848647139086439736156494300340386976715499174197711943847811055584824878345916377426092707005438272124999831720640383454745536251062640017881724132418681520850102476293953527104432778744712937740500340950900126763991273163515998138950429572173044115915387983988",
+    "c": "50780147548059214428577806855475787157956488583197774544606194457608437769429"
+  },
+  "rev_reg": null,
+  "witness": null
+}
+```
+11. The credential that was logged to the console contains the following keys that match the schema ID and credential definition ID
+```json
+"schema_id": "HJUyRbeMTesrgShkNqbAYP:2:Person:1.0.0",
+"cred_def_id": "HJUyRbeMTesrgShkNqbAYP:3:CL"
+```
+12. The credential that was logged to the console contains a key called "values" that contains an object with a key called "Name" with a raw value of "Alice"
+
+Alice has successfully been issued a credential by the Node.js mediator for the credential definition with ID of `HJUyRbeMTesrgShkNqbAYP:3:CL` containing a value of "Alice" for the "Name" attribute.
+
+### Make a request from one edge agent to the other edge agent asking for proof of a credential
+1. Added `ProofEventTypes` to the list of imports for the React Native edge agent
+```
+import { ProofEventTypes } from "@aries-framework/core";
+```
+2. Added a listener to `/server/mywallet/App.js` to accept incoming proof requests received by the edge agent and present proof to the edge agent that requested the proof
+```javascript
+agent.events.on<ProofStateChangedEvent>(
+  ProofEventTypes.ProofStateChanged,
+
+  async (event) => {
+    var payload = event.payload;
+
+    if (payload.proofRecord.state === "request-received") {
+      const creds = await agent.proofs.getRequestedCredentialsForProofRequest(
+        payload.proofRecord.id
+      );
+
+      const automaticRequestedCreds = await agent.proofs.autoSelectCredentialsForProofRequest(creds);
+
+      await agent.proofs.acceptRequest(
+        payload.proofRecord.id,
+        automaticRequestedCreds
+      );
+    }
+  }
+);
+
+```
+This is where the expected functionality fails. Everything up until this point has worked flawlessly. It is only when trying to create the proof presentation that an error occurs.
+
+The error in question reads as follows:
+```
+Possible Unhandled Promise Rejection (id: 0):
+[IndySdkError: IndyError(CommonInvalidStructure): CommonInvalidStructure]
+```
