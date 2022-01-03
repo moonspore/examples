@@ -191,7 +191,7 @@ The mediator agent is now running on Node.js and able to create connection invit
 
 ### Edge agent on React Native
 1. Copied the `/server/afj/configs` folder that contains the VON genesis and pool files to the React Native project at `/server/mywallet/configs`
-2. Modified the automatically created `/server/mywallet/App.js` file and added the ability to initialize an agent
+2. Modified the automatically created `/server/mywallet/App.js` file and added the ability to initialize an agent with a customized wallet label
 ```javascript
  import {
   Agent,
@@ -272,3 +272,13 @@ const App: () => Node = () => {
 
 export default App;
 ```
+3. Launched an Android emulator using `sudo ./emulator -avd Pixel_3a_API_30_x86` to create a *Pixel 3a* device
+4. Installed the React Native app on the emulator using `npx react-native run-android`
+5. Launched a second emulator using `sudo ./emulator -avd Pixel_3a_API_30_x86 -read-only` to create another *Pixel 3a* device (since the same command was used to launch the emulator, the React Native app is already installed on the second emulator when it launches)
+6. Opened the React Native app on both emulators
+7. Both devices display the "My Wallet" application interface which consists of two buttons "Initialize Agent with name Alice" and "Initialize Agent with name Bob"
+8. Tapped "Initialize Agent with name Alice" on the first device and tapped "Initialize Agent with name Bob" on the second device
+
+The React Native "My Wallet" app is now running on both emulated devices.
+
+The first device initialized the agent using the wallet label *My Wallet Alice* and the second device initialized the agent using the wallet label *My Wallet Bob*
