@@ -870,3 +870,65 @@ The error in question reads as follows:
 Possible Unhandled Promise Rejection (id: 0):
 [IndySdkError: IndyError(CommonInvalidStructure): CommonInvalidStructure]
 ```
+
+### Debugging considerations
+The error is ambiguous and lacks verbosity.
+
+Line 231 of [/packages/core/src/modules/proofs/ProofsModule.ts](https://github.com/hyperledger/aries-framework-javascript/blob/main/packages/core/src/modules/proofs/ProofsModule.ts#L231) from the aries-framework-javascript repository make a call to the `createPresentation()` method of the ProofService
+
+Line 418 of [/packages/core/src/modules/proofs/services/ProofService.ts](https://github.com/hyperledger/aries-framework-javascript/blob/main/packages/core/src/modules/proofs/services/ProofService.ts#L418) from the aries-framework-javascript repository contains the following code
+```typescript
+this.logger.debug(`Creating presentation for proof record with id ${proofRecord.id}`)
+```
+
+When the error occurs, the console log on Alice's agent shows `Creating presentation for proof record with id...` with the correct proof record ID, so the ProofService call from the ProofsModule executes correctly through line 418 of the ProofService.
+
+The actual error seems to occur at Line 438 of [/packages/core/src/modules/proofs/services/ProofService.ts](https://github.com/hyperledger/aries-framework-javascript/blob/main/packages/core/src/modules/proofs/services/ProofService.ts#L438) from the aries-framework-javascript repository when calling the `createProof()` method.
+
+Any code after that line (438) in the ProofService is not executed and any code after line 231 of the ProofsModule is not executed.
+
+The error seems to be happening in the `createProof()` method from ProofService.ts
+```typescript
+private async createProof(
+  proofRequest: ProofRequest,
+  requestedCredentials: RequestedCredentials
+): Promise<IndyProof> {
+  const credentialObjects = [
+    ...Object.values(requestedCredentials.requestedAttributes),
+    ...Object.values(requestedCredentials.requestedPredicates),
+  ].map((c) => c.credentialInfo)
+
+  const schemas = await this.getSchemas(new Set(credentialObjects.map((c) => c.schemaId)))
+  const credentialDefinitions = await this.getCredentialDefinitions(
+    new Set(credentialObjects.map((c) => c.credentialDefinitionId))
+  )
+
+  const proof = await this.indyHolderService.createProof({
+    proofRequest: proofRequest.toJSON(),
+    requestedCredentials: requestedCredentials.toJSON(),
+    schemas,
+    credentialDefinitions,
+  })
+
+  return proof
+}
+```
+### Debugging assumptions
+I have a feeling that the issue is arising from not having a revocation registry entry defined for the credential that was issued.
+
+I believe that I need to create an Indy Tails Server and use it as the revocation registry for the verifiable credentials that the Node.js mediator issues so that the created proof can include information about whether or not the verifiable credential has been revoked.
+
+The documentation for requesting, presenting, and verifying proofs is scarce and I am not sure that I can resolve this issue without some guidance.
+
+### Comments
+This error is occuring at the final step of the implementation.
+
+If the proof presentation can be sucessfully created by the holder then it will be sent to the verifier as an outbound message where it will be verified and an event listener on the verifier can handle the emitted verification event.
+
+Once verified, acknowledgement of the verification will be sent from the verifier back to the holder where an event listener can handle the emitted acknowledgement event.
+
+The sending of the proof presentation to the verifier happens automatically as part of the `acceptRequest()` method of the ProofService after the proof has been created.
+
+I have not been able to get past this error to explore being able to respond to the presentation by the holder with acknowledgement from the verifier.
+
+This is the final step of the entire implementation and I am unable to continue until this error is resolved.
