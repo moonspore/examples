@@ -885,7 +885,7 @@ When the error occurs, the console log on Alice's agent shows `Creating presenta
 
 The actual error seems to occur at Line 438 of [/packages/core/src/modules/proofs/services/ProofService.ts](https://github.com/hyperledger/aries-framework-javascript/blob/main/packages/core/src/modules/proofs/services/ProofService.ts#L438) from the aries-framework-javascript repository when calling the `createProof()` method.
 
-Any code after that line (438) in the ProofService is not executed and any code after line 231 of the ProofsModule is not executed.
+Any code after line 438 in the ProofService is not executed and any code after line 231 of the ProofsModule is not executed.
 
 The error seems to be happening in the `createProof()` method from ProofService.ts
 ```typescript
