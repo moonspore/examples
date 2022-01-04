@@ -1,4 +1,4 @@
-# Configuration for mediator agent (Node.js), edge agents (React Native), and ledger (VON) using Aries Framework JavaScript.
+# Configuration for mediator agent (Node.js), edge agents (React Native), and ledger (VON) using Aries Framework JavaScript
 
 ## Goals
 1. Run a Node.js agent that can mediate connections and also issue verifiable credentials to other agents.
