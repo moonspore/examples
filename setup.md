@@ -65,7 +65,7 @@ var config = {
 };
 exports["default"] = config;
 ```
-2. Visited the VON webserver UI located at `http://localhost:9000/` and clicked the "Genesis Transaction" button to download the JSON needed for the genesis file.
+2. Visited the VON webserver UI located at `http://192.168.1.72:9000/` and clicked the "Genesis Transaction" button to download the JSON needed for the genesis file.
 3. Created `/server/afj/config/von/genesis-file.ts` using the downloaded genesis transaction JSON.
 ```typescript
 export default `{"reqSignature":{},"txn":{"data":{"data":{"alias":"Node1","blskey":"4N8aUNHSgjQVgkpm8nhNEfDf6txHznoYREg9kirmJrkivgL4oSEimFF6nsQ6M41QvhM2Z33nves5vfSn9n1UwNFJBYtWVnHYMATn76vLuL3zU88KyeAYcHfsih3He6UHcXDxcaecHVz6jhCYz1P2UZn2bDVruL5wXpehgBfBaLKm3Ba","blskey_pop":"RahHYiCvoNCtPTrVtP7nMC5eTYrsUA8WjXbdhNc8debh1agE9bGiJxWBXYNFbnJXoXhWFMvyqhqhRoq737YQemH5ik9oL7R4NTTCz2LEZhkgLJzB3QRQqJyBNyv7acbdHrAT8nQ9UkLbaVL9NBpnWXBTw4LEMePaSHEw66RzPNdAX1","client_ip":"172.17.0.1","client_port":9702,"node_ip":"172.17.0.1","node_port":9701,"services":["VALIDATOR"]},"dest":"Gw6pDLhcBcoQesN72qfotTgFa7cbuqZpkX3Xo6pLhPhv"},"metadata":{"from":"Th7MpTaRZVRYnPiabds81Y"},"type":"0"},"txnMetadata":{"seqNo":1,"txnId":"fea82e10e894419fe2bea7d96296a6d46f50f93f9eeda954ec461b2ed2950b62"},"ver":"1"}
@@ -567,11 +567,11 @@ httpInboundTransport.app.get('/publicdid', async (req, res) => {
   res.send(agent.publicDid)
 })
 ```
-2. Visited `http://localhost:3001/publicdid` in a browser to display the public DID and Verkey for the mediator
+2. Visited `http://192.168.1.72:3001/publicdid` in a browser to display the public DID and Verkey for the mediator
 ```json
 {"did":"HJUyRbeMTesrgShkNqbAYP","verkey":"9tKZRphq5Jwoo79CVnTEv75fXQ3BQzBqFquWGARM9bUx"}
 ```
-3. Visited the VON webserver UI located at `http://localhost:9000/` and performed the following steps in the "Authenticate a New DID" section of the UI:
+3. Visited the VON webserver UI located at `http://192.168.1.72:9000/` and performed the following steps in the "Authenticate a New DID" section of the UI:
   - Changed "Register from seed" to "Register from DID"
   - Populated the DID field with the value `HJUyRbeMTesrgShkNqbAYP`
   - Populated the Verkey field with the value `9tKZRphq5Jwoo79CVnTEv75fXQ3BQzBqFquWGARM9bUx`
@@ -617,7 +617,7 @@ httpInboundTransport.app.get('/createschema', async (req, res) => {
 })
 ```
 4. Visited `http://192.168.1.72:3001/createschema` in a browser
-5. Visited the VON webserver UI located at `http://localhost:9000/` and clicked the "Domain" link under the "Ledger State" section of the UI
+5. Visited the VON webserver UI located at `http://192.168.1.72:9000/` and clicked the "Domain" link under the "Ledger State" section of the UI
 6. The ledger shows two new entries
 
 The first new entry is for the schema and contains the following information under the "Transaction" header
