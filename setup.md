@@ -388,7 +388,7 @@ const acceptInvite = async () => {
 http://192.168.1.72:3001/invitation?c_i=eyJAdHlwZSI6Imh0dHBzOi8vZGlkY29tbS5vcmcvY29ubmVjdGlvbnMvMS4wL2ludml0YXRpb24iLCJAaWQiOiI1ODNhYzM0Zi0wN2NjLTQ2MWQtOTZhNC0zNGRmYTM2NDcxODYiLCJsYWJlbCI6Ik1pZ3JhdGUgV2FsbGV0IEFsaWNlIiwicmVjaXBpZW50S2V5cyI6WyI1VUFMOEpUaVZ2N3A4alBVUUFXVVFOR3lMTlc0SHVyMWtYREI1eTF4Vnl6aCJdLCJzZXJ2aWNlRW5kcG9pbnQiOiJodHRwOi8vMTkyLjE2OC4xLjcyOjMwMDEiLCJyb3V0aW5nS2V5cyI6WyJDY3dNWXdzMUtKUG5VQjlEMXpMWm80N2ZwQ2ExeW1pUHhXM21ETjVLVGJtWSJdfQ
 ```
 9. Visited the newly created invitation URL in the browser to display its contents
-```
+```json
 {
   "@type": "https://didcomm.org/connections/1.0/invitation",
   "@id": "583ac34f-07cc-461d-96a4-34dfa3647186",
