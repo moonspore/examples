@@ -529,14 +529,14 @@ agent.events.on(BasicMessageEventTypes.BasicMessageStateChanged, (e) => {
 ### Testing basic messaging between edge agents and the mediator
 Alice
 1. Typed a message saying "Hello from Alice" into the message text input field on Alice's agent
-2. Pressed "Send" Message next to "Private Data Vault" in the list of connections on Alice's agent
+2. Pressed the "Send Message" button next to "Private Data Vault" in the list of connections on Alice's agent
 3. The console for the mediator running on Node.js displays "Hello from Alice"
 4. A return message saying "message received" is sent from the mediator to Alice's agent
 5. Alice's agent displays an alert that says "message received"
 
 Bob
 1. Typed a message saying "Hello from Bob" into the message text input field on Bob's agent
-2. Pressed "Send" Message next to "Private Data Vault" in the list of connections on Bob's agent
+2. Pressed the "Send Message" button next to "Private Data Vault" in the list of connections on Bob's agent
 3. The console for the mediator running on Node.js displays "Hello from Bob"
 4. A return message saying "message received" is sent from the mediator to Bob's agent
 5. Bob's agent displays an alert that says "message received"
