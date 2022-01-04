@@ -1,4 +1,4 @@
-# DIDComm and SSI using Aries Framework JavaScript on Node.js with Aries Mobile Agent React Native
+# DIDComm and SSI using Aries Framework JavaScript on Node.js with React Native edge agent
 ## The goal of the project is to design a messaging application called "School Chat" that allows students who are considering applying to a school to chat with other students who currently attend that school so that they can ask questions and get information that might help them decide if they want to apply.
 
 ### Organizational Structure
