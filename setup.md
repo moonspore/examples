@@ -786,7 +786,7 @@ const showCredentials = async () => {
 11. The credential that was logged to the console contains the following keys that match the schema ID and credential definition ID
 ```json
 "schema_id": "HJUyRbeMTesrgShkNqbAYP:2:Person:1.0.0",
-"cred_def_id": "HJUyRbeMTesrgShkNqbAYP:3:CL"
+"cred_def_id": "HJUyRbeMTesrgShkNqbAYP:3:CL:7:latest"
 ```
 12. The credential that was logged to the console contains a key called "values" that contains an object with a key called "Name" with a raw value of "Alice"
 
