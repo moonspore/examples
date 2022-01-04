@@ -700,11 +700,11 @@ httpInboundTransport.app.get("/offerlist", async (req, res) => {
 });
 ```
 3. Added `CredentialEventTypes` to the list of imports for the React Native edge agent
-```
+```javascript
 import { CredentialEventTypes } from "@aries-framework/core";
 ```
 4. Added a listener to the edge agent that will listen for credential offers and accept them
-```
+```javascript
 agent.events.on(
   CredentialEventTypes.CredentialStateChanged,
   async ({payload}: CredentialStateChangedEvent) => {
@@ -721,7 +721,7 @@ agent.events.on(
 ```
 6. Clicked the link titled "Issue credential to Alice" to call the `/offer` method and issue a credential to Alice's agent with the "Name" attribute having a value of "Alice"
 7. Imported the Buffer library to decode the credential data which is provided in base64
-```
+```javascript
 import { Buffer } from 'buffer';
 ```
 8. Created a method in `/server/mywallet/App.js` of the React Native app to decode any credentials the agent has received and log them to the console
