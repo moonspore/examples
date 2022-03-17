@@ -1,0 +1,117 @@
+------
+COMMON
+------
+
+#find all files in /path/to/folder (and its subfolders) that contain the word "help" anywhere in the file name
+find /path/to/folder -name '*help*'
+
+#find all files in /path/to/files (and its subfolders) that contain the word "help" in the contents and display the path and file name of each match on a separate line
+grep -rnl '/path/to/files' -e 'help'
+
+#log in to remote ssh
+ssh -i /path/to/some.key user@host
+
+#add ssh key to allow logging in to remote ssh without supplying a path to the key
+ssh-add /path/to/some.key
+
+#mount remote ssh as a folder in the file browser after ssh key has been added
+ssh://user@host
+
+#launch an android emulator
+cd ~/Android/Sdk/emulator
+sudo ./emulator -avd Pixel_3a_API_30_x86 -read-only
+
+----
+FIND
+----
+
+#perform the same find but show the line numbers of the matches (there may be multiple matches for the same file if the file contains the word "help" on more than one line)
+grep -rHino '/path/to/files' -e 'help' | cut -d: -f1-2
+
+#this will show each matching file once with no line numbers, this is equivalent to to: grep -rnl '/path/to/files' -e 'help'
+grep -rHinol '/path/to/files' -e 'help' | cut -d: -f1-2
+
+#deep find all files in /path/to/files (and its subfolders) that contain the word "help" in the contents
+grep -rno -R -d recurse '/path/to/files' -e 'help'
+#or
+grep -Hno -R -d recurse '/path/to/files' -e 'help'
+
+ #find any lines that start with the word "help" (ignoring any leading whitespace by using \s*) and remove them
+.*^\s*help.*\r?\n
+
+-----
+TASKS
+-----
+
+#dump the contents of database on host to /server/dump/database
+mongodump --uri=mongodb+srv://user:pass@host/database --out=/server/dump/
+
+#restore the contents of /server/dump/database to database on localhost
+mongorestore --drop --db database /server/dump/database/
+
+#restore the contents of /server/dump/database to database on host
+mongorestore --host host --drop -db database /server/dump/database/
+
+------
+SYSTEM
+------
+
+#kill all processes that contain the word "myapp"
+sudo pkill -f myapp
+
+-------
+INSTALL
+-------
+
+#install NVM
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+
+#install nodejs with npm
+curl -fsSL https://deb.nodesource.com/setup_17.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+#install docker
+sudo apt install docker.io
+
+------
+DOCKER
+------
+
+#create image named mongodb from mongo image in Docker repo
+docker run -it -d -p 27017:27017 --net queues --name mongodb mongo
+
+#create project/mongo from new mongodb image
+sudo docker commit mongodb project/mongo
+
+#create image from project/mongo
+sudo docker run -it -d -p 27017:27017 --name mongodb project/mongo
+#optionally save data to external volume -v /server/project/mongodb:/data/db
+
+#build local docker image
+sudo docker build -t project/project .
+
+#create new container named project with options from local image exposing port 27017
+sudo docker run --link=mongodb -p 27017:27017 --name project -d project/project
+
+#start/Stop the new container named project
+sudo docker container start|stop project
+sudo docker container start|stop mongodb
+
+#commit changes from container named project (container must be stopped) to project/project image:
+sudo docker commit project project/project
+
+#commit changes from container named project (container must be stopped) to new project/projectv2 image:
+sudo docker commit project project/projectv2
+
+#use docker compose to orchestrate the services
+sudo docker compose build|up|down
+
+-----
+TOOLS
+-----
+
+#open a remote desktop session to host as user on port at 1600x900 resolution
+rdesktop host:port -g 1600x900 -u user
+
+#open a remote desktop session to host as user on port at 1600x900 resolution and automatically login using password (nohup and the & allow the window to be closed but keep the session open)
+nohup rdesktop host:port -g 1600x900 -u user -p password &
