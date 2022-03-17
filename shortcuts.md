@@ -93,13 +93,13 @@ install NVM<br />
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 ```
 
-install nodejs with npm<br />
+install NodeJS with NVM<br />
 ```
 curl -fsSL https://deb.nodesource.com/setup_17.x | sudo -E bash -
 sudo apt-get install -y nodejs
 ```
 
-install docker<br />
+install Docker<br />
 ```
 sudo apt install docker.io
 ```
