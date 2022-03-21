@@ -112,7 +112,7 @@ sudo apt install docker.io
 DOCKER
 ------
 
-create image named mongodb from mongo image in Docker repo<br />
+create image named mongodb from mongo image in Docker hub<br />
 ```
 docker run -it -d -p 27017:27017 --net queues --name mongodb mongo
 ```
