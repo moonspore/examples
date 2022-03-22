@@ -28,7 +28,6 @@ ssh://user@host
 
 launch an android emulator<br />
 ```
-crecursively copy all files and folders from /source to /destination except folders names ignore
 rsync -rv --exclude=ignore /sourc /destinationd ~/Android/Sdk/emulator
 sudo ./emulator -avd Pixel_3a_API_30_x86 -read-only
 ```
