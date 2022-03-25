@@ -34,7 +34,7 @@ sudo ./emulator -avd Pixel_3a_API_30_x86 -read-only
 
 recursively copy all files and folders from /source to /destination except folders names ignore<br />
 ```
-rsync -rv --exclude=ignore /sourc /destination
+rsync -rv --exclude=ignore /source /destination
 ```
 
 FIND
