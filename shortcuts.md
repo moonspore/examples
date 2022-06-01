@@ -59,7 +59,7 @@ or
 grep -Hno -R -d recurse '/path/to/files' -e 'help'
 ```
 
- find any lines that start with the word "help" (ignoring any leading whitespace by using \s*) and remove them<br />
+ find any lines that contain with the word "help" (ignoring any leading whitespace by using \s*) and remove them<br />
 ```
 .*^\s*help.*\r?\n
 ```
