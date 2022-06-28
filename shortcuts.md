@@ -64,6 +64,11 @@ grep -Hno -R -d recurse '/path/to/files' -e 'help'
 .*^\s*help.*\r?\n
 ```
 
+find deleted files containing the string 'help'<br />
+```
+sudo grep -a -C 200 -F 'help' /dev/sda > ~/out.log
+```
+
 TASKS
 -----
 
