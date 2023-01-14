@@ -1065,7 +1065,7 @@ await myAgent.proofs.acceptRequest(
 }
 ```
 
-10. Modify the listener to `/server/mywallet/App.js` to accept incoming proof presentations:
+10. Modified the listener to `/server/mywallet/App.js` to accept incoming proof presentations:
 
 ```javascript
 agent.events.on <
