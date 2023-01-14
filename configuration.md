@@ -1005,7 +1005,7 @@ agent.events.on <
 
 6. A proof request is created and sent to Alice's agent
 
-7. The results of `autoSelectCredentialsForProofRequest()` display a matching set o requested attributes when logged to the console:
+7. The results of `autoSelectCredentialsForProofRequest()` display a matching set of requested attributes when logged to the console:
 
 ```json
 {
