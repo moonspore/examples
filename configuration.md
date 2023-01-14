@@ -1106,13 +1106,13 @@ agent.events.on <
         };
 
         //We can do something here now that we know the credential is valid.
-        console.log("Verified");
+        alert("Verified");
       }
     }
   });
 ```
 
-11. The console for Bob's agent logs the following text: `Verified`
+11. Bob's agent displays an alert with the following text: `Verified`
 
 12. Everything works as it should.
 
