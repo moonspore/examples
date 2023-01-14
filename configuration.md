@@ -1112,10 +1112,10 @@ agent.events.on <
   });
 ```
 
-11. The console for Bob's agent logs the following text `Verified`
+11. The console for Bob's agent logs the following text: `Verified`
 
 12. Everything works as it should.
 
 Alice and Bob can now exchange messages and verify each other's credentials.
 
-If either Alice or Bob sends a message to the other while they do not have the "My Wallet" application open the message will be queued at the mediator until the person the message is intended for opens their "My Wallet" application and it connects to the mediator.
+If either Alice or Bob sends a message to the other while the other does not have the "My Wallet" application open the message will be queued at the mediator until the person the message is intended for opens their "My Wallet" application and it connects to the mediator.
