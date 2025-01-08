@@ -180,3 +180,8 @@ open a remote desktop session to host as user on port at 1600x900 resolution and
 ```
 nohup rdesktop host:port -g 1600x900 -u user -p password &
 ```
+
+create a VirtualBox vmdk from a partition or device
+```
+sudo VBoxManage internalcommands createrawvmdk -filename /path/to/disk.vmdk -rawdisk /dev/sda
+```
